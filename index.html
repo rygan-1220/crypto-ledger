@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>CryptoLedger - Blockchain Reimbursement System</title>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .v-application {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .role-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        .encryption-badge {
+            background: linear-gradient(45deg, #00c853, #00e676);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <div class="hero-section">
+                <v-container>
+                    <v-row justify="center">
+                        <v-col cols="12" md="10" lg="8">
+                            <!-- Header -->
+                            <div class="text-center mb-12">
+                                <v-avatar color="white" size="80" class="mb-4">
+                                    <v-icon size="50" color="purple darken-2">mdi-shield-lock</v-icon>
+                                </v-avatar>
+                                <h1 class="display-2 font-weight-bold white--text mb-4">CryptoLedger</h1>
+                                <p class="headline white--text font-weight-light mb-2">Blockchain-Based Reimbursement
+                                    System</p>
+                                <div class="d-flex justify-center align-center">
+                                    <span class="encryption-badge mr-2">
+                                        <v-icon small color="white" class="mr-1">mdi-lock</v-icon>
+                                        Layer 1 AES-256
+                                    </span>
+                                    <span class="encryption-badge mr-2">
+                                        <v-icon small color="white" class="mr-1">mdi-lock-plus</v-icon>
+                                        Layer 2 AES-256
+                                    </span>
+                                    <span class="encryption-badge">
+                                        <v-icon small color="white" class="mr-1">mdi-draw-pen</v-icon>
+                                        Digital Signature
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Role Selection Cards -->
+                            <v-row class="mb-8">
+                                <v-col cols="12" md="4">
+                                    <v-card class="pa-8 text-center" elevation="2" hover
+                                        @click="navigateTo('employee.html')">
+                                        <div class="text-center">
+                                            <v-avatar color="blue lighten-5" size="80" class="mb-4">
+                                                <v-icon size="40" color="primary">mdi-account</v-icon>
+                                            </v-avatar>
+                                            <h2 class="text-h5 font-weight-bold mb-2">Employee</h2>
+                                            <p class="grey--text mb-4">Submit and track your reimbursements</p>
+                                            <v-divider class="mb-4"></v-divider>
+                                            <div class="text-left">
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Submit reimbursements</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">View own records</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Track approval status</span>
+                                                </div>
+                                                <div class="d-flex align-center">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">K_real encryption</span>
+                                                </div>
+                                            </div>
+                                            <v-btn color="primary" block large depressed class="mt-6">
+                                                Enter as Employee
+                                                <v-icon right>mdi-arrow-right</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </v-card>
+                                </v-col>
+
+                                <v-col cols="12" md="4">
+                                    <v-card class="pa-8 text-center" elevation="2" hover
+                                        @click="navigateTo('manager.html')">
+                                        <div class="text-center">
+                                            <v-avatar color="orange lighten-5" size="80" class="mb-4">
+                                                <v-icon size="40" color="orange darken-2">mdi-account-tie</v-icon>
+                                            </v-avatar>
+                                            <h2 class="text-h5 font-weight-bold mb-2">Dept Manager</h2>
+                                            <p class="grey--text mb-4">Approve team reimbursements</p>
+                                            <v-divider class="mb-4"></v-divider>
+                                            <div class="text-left">
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Approve/reject requests</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">View team analytics</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Manage team members</span>
+                                                </div>
+                                                <div class="d-flex align-center">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Department K_real access</span>
+                                                </div>
+                                            </div>
+                                            <v-btn color="orange darken-2" block large depressed class="mt-6">
+                                                Enter as Manager
+                                                <v-icon right>mdi-arrow-right</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </v-card>
+                                </v-col>
+
+                                <v-col cols="12" md="4">
+                                    <v-card class="pa-8 text-center" elevation="2" hover
+                                        @click="navigateTo('finance.html')">
+                                        <div class="text-center">
+                                            <v-avatar color="green lighten-5" size="80" class="mb-4">
+                                                <v-icon size="40" color="success">mdi-cash-multiple</v-icon>
+                                            </v-avatar>
+                                            <h2 class="text-h5 font-weight-bold mb-2">Finance Manager</h2>
+                                            <p class="grey--text mb-4">Cross-department oversight</p>
+                                            <v-divider class="mb-4"></v-divider>
+                                            <div class="text-left">
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Cross-dept analytics</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Financial reports</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Audit trail access</span>
+                                                </div>
+                                                <div class="d-flex align-center">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">K_session temporary access</span>
+                                                </div>
+                                            </div>
+                                            <v-btn color="success" block large depressed class="mt-6">
+                                                Enter as Finance
+                                                <v-icon right>mdi-arrow-right</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
+
+                            <!-- System Features -->
+                            <v-card class="rounded-xl pa-8 mt-8" elevation="8">
+                                <h3 class="text-h6 font-weight-bold mb-6 text-center">System Security Features</h3>
+                                <v-row>
+                                    <v-col cols="12" sm="6" md="3">
+                                        <div class="text-center">
+                                            <v-icon size="40" color="primary" class="mb-2">mdi-lock-outline</v-icon>
+                                            <div class="font-weight-bold">Two-Layer AES</div>
+                                            <div class="caption grey--text">K_real + K_system</div>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="3">
+                                        <div class="text-center">
+                                            <v-icon size="40" color="success" class="mb-2">mdi-file-sign</v-icon>
+                                            <div class="font-weight-bold">Digital Signature</div>
+                                            <div class="caption grey--text">RSA-SHA256</div>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="3">
+                                        <div class="text-center">
+                                            <v-icon size="40" color="orange" class="mb-2">mdi-database-eye</v-icon>
+                                            <div class="font-weight-bold">Pattern Layer</div>
+                                            <div class="caption grey--text">Privacy-preserving analytics</div>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="12" sm="6" md="3">
+                                        <div class="text-center">
+                                            <v-icon size="40" color="purple" class="mb-2">mdi-shield-check</v-icon>
+                                            <div class="font-weight-bold">Hash Chain</div>
+                                            <div class="caption grey--text">Immutable audit trail</div>
+                                        </div>
+                                    </v-col>
+                                </v-row>
+                            </v-card>
+
+                            <!-- Footer -->
+                            <div class="text-center mt-8">
+                                <p class="white--text caption">
+                                    <v-icon small color="white" class="mr-1">mdi-information</v-icon>
+                                    This is a prototype demonstration - No backend functionality
+                                </p>
+                            </div>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </div>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.js"></script>
+    <script>
+        new Vue({
+            el: '#app',
+            vuetify: new Vuetify({
+                theme: {
+                    themes: {
+                        light: {
+                            primary: '#667eea',
+                            secondary: '#764ba2',
+                            accent: '#82B1FF',
+                            error: '#FF5252',
+                            info: '#2196F3',
+                            success: '#4CAF50',
+                            warning: '#FFC107',
+                        },
+                    },
+                },
+            }),
+            methods: {
+                navigateTo(page) {
+                    window.location.href = page;
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

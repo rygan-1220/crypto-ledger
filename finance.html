@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Finance Manager Dashboard - CryptoLedger</title>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .v-application {
+            font-family: 'Roboto', sans-serif;
+        }
+
+
+
+        .status-chip-pending {
+            background-color: #FFF3E0 !important;
+            color: #F57C00 !important;
+        }
+
+        .status-chip-approved {
+            background-color: #E8F5E9 !important;
+            color: #2E7D32 !important;
+        }
+
+        .status-chip-rejected {
+            background-color: #FFEBEE !important;
+            color: #C62828 !important;
+        }
+
+        .session-active {
+            background: linear-gradient(45deg, #4CAF50, #66BB6A);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.7;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <!-- Navigation Drawer -->
+            <v-navigation-drawer app permanent color="white" width="260" elevation="1">
+                <div class="d-flex align-center pa-4 pl-6">
+                    <v-avatar color="success" size="40" class="mr-3">
+                        <v-icon color="white">mdi-shield-lock</v-icon>
+                    </v-avatar>
+                    <div>
+                        <div class="text-h6 font-weight-bold">CryptoLedger</div>
+                        <div class="text-caption grey--text">Finance Portal</div>
+                    </div>
+                </div>
+
+                <v-divider></v-divider>
+
+                <v-list nav dense class="mt-4 px-4">
+                    <v-list-item-group v-model="selectedItem" color="success">
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-view-dashboard</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Dashboard</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-file-document-multiple</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">All Pending Reviews</v-list-item-title>
+                            </v-list-item-content>
+                            <v-list-item-action>
+                                <v-chip x-small color="orange" text-color="white">{{ allPendingCount }}</v-chip>
+                            </v-list-item-action>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-key-variant</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">K_session Manager</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-history</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Audit Trail</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-chart-bar</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Financial Reports</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+
+                <template v-slot:append>
+                    <div class="pa-4">
+                        <v-card v-if="sessionActive" class="rounded pa-3 mb-3 session-active" elevation="0">
+                            <div class="d-flex align-center">
+                                <v-icon color="white" class="mr-2">mdi-key-variant</v-icon>
+                                <div>
+                                    <div class="caption font-weight-bold white--text">K_session Active</div>
+                                    <div class="caption white--text">{{ sessionTimeRemaining }}</div>
+                                </div>
+                            </div>
+                        </v-card>
+                        <v-card v-else class="rounded pa-3 mb-3" color="grey lighten-4" elevation="0">
+                            <div class="d-flex align-center">
+                                <v-icon color="grey" class="mr-2">mdi-shield-check</v-icon>
+                                <div>
+                                    <div class="caption font-weight-bold">K_system Active</div>
+                                    <div class="caption grey--text text--darken-1">Pattern Layer Only</div>
+                                </div>
+                            </div>
+                        </v-card>
+                        <v-btn block color="error" text large href="index.html">
+                            <v-icon left>mdi-logout</v-icon> Logout
+                        </v-btn>
+                    </div>
+                </template>
+            </v-navigation-drawer>
+
+            <!-- App Bar -->
+            <v-app-bar app color="white" elevation="0"
+                style="border-bottom: 1px solid #e0e0e0 !important; height: 64px;">
+                <v-toolbar-title class="font-weight-bold text-h6 ml-2">
+                    {{ pageTitle }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <div class="d-flex align-center mr-4">
+                    <v-btn icon class="mr-2">
+                        <v-badge color="error" :content="allPendingCount" overlap>
+                            <v-icon>mdi-bell-outline</v-icon>
+                        </v-badge>
+                    </v-btn>
+                    <v-avatar color="grey lighten-4" size="40" class="mr-3">
+                        <v-icon color="success">mdi-cash-multiple</v-icon>
+                    </v-avatar>
+                    <div class="d-none d-sm-block text-right">
+                        <div class="subtitle-2 font-weight-bold black--text mb-0">{{ currentUser.name }}</div>
+                        <div class="caption grey--text mt-0">{{ currentUser.email }}</div>
+                    </div>
+                </div>
+            </v-app-bar>
+
+            <!-- Main Content -->
+            <v-main class="grey lighten-4">
+                <v-container class="pa-6" fluid>
+                    <!-- Dashboard Page -->
+                    <div v-if="selectedItem === 0">
+                        <!-- Stats Row -->
+                        <v-row class="mb-4">
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Total Company</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold primary--text mb-1">
+                                                RM {{ stats.totalCompany.toLocaleString() }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="blue lighten-5" class="rounded">
+                                            <v-icon x-large color="primary">mdi-cash-multiple</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Pending Reviews</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold orange--text mb-1">
+                                                {{ stats.pending }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="orange lighten-5" class="rounded">
+                                            <v-icon x-large color="orange">mdi-clock-alert</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Approved</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold success--text mb-1">
+                                                {{ stats.approved }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="green lighten-5" class="rounded">
+                                            <v-icon x-large color="success">mdi-check-circle</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Departments</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold info--text mb-1">
+                                                {{ stats.departments }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="light-blue lighten-5" class="rounded">
+                                            <v-icon x-large color="info">mdi-office-building</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+
+                        <!-- Charts Row -->
+                        <v-row class="mb-4">
+                            <v-col cols="12" md="8">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Department Comparison</div>
+                                            <div class="caption grey--text">Total reimbursements by department</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <div v-for="dept in departmentBreakdown" :key="dept.name" class="mb-4">
+                                            <div class="d-flex justify-space-between mb-2">
+                                                <span class="font-weight-medium">{{ dept.name }}</span>
+                                                <span class="font-weight-bold">RM {{ dept.amount.toLocaleString()
+                                                    }}</span>
+                                            </div>
+                                            <v-progress-linear :value="(dept.amount / maxDeptAmount) * 100" height="20"
+                                                rounded :color="dept.color"></v-progress-linear>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" md="4">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Category Breakdown</div>
+                                            <div class="caption grey--text">Top expense categories</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <div v-for="cat in topCategories" :key="cat.name"
+                                            class="d-flex justify-space-between mb-3">
+                                            <div class="d-flex align-center">
+                                                <v-icon small :color="cat.color" class="mr-2">mdi-circle</v-icon>
+                                                <span class="caption">{{ cat.name }}</span>
+                                            </div>
+                                            <span class="caption font-weight-bold">RM {{ cat.amount.toLocaleString()
+                                                }}</span>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+
+                        <!-- Pattern Layer Demo -->
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card class="rounded-card" elevation="0" color="blue lighten-5">
+                                    <v-card-text class="pa-6">
+                                        <div class="d-flex align-center mb-4">
+                                            <v-icon color="primary" class="mr-2">mdi-information</v-icon>
+                                            <div class="font-weight-bold">Pattern Layer Analytics</div>
+                                        </div>
+                                        <p class="mb-2">
+                                            <v-icon small color="success" class="mr-1">mdi-check</v-icon>
+                                            Currently viewing aggregated data using <strong>K_system</strong> (Layer 2
+                                            decryption only)
+                                        </p>
+                                        <p class="mb-2">
+                                            <v-icon small color="info" class="mr-1">mdi-database-eye</v-icon>
+                                            Pattern Layer provides: amount, department, project, category, date, user_id
+                                        </p>
+                                        <p class="mb-0">
+                                            <v-icon small color="warning" class="mr-1">mdi-lock</v-icon>
+                                            Sensitive data (vendor, description, receipts) remain encrypted with
+                                            <strong>K_real</strong>. Request K_session to access.
+                                        </p>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- All Pending Reviews Page -->
+                    <div v-if="selectedItem === 1">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">All Pending Reviews</div>
+                                            <div class="caption grey--text">Cross-department reimbursements awaiting
+                                                approval</div>
+                                        </div>
+                                        <v-spacer></v-spacer>
+                                        <v-select v-model="filterDept" :items="['All', ...deptNames]" label="Department"
+                                            outlined dense hide-details class="mr-4"
+                                            style="max-width: 200px"></v-select>
+                                        <v-text-field v-model="search" prepend-inner-icon="mdi-magnify"
+                                            label="Search..." single-line hide-details outlined dense
+                                            style="max-width: 250px" background-color="grey lighten-5"></v-text-field>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-data-table :headers="pendingHeaders" :items="filteredPending" :search="search"
+                                        class="elevation-0">
+                                        <template v-slot:item.id="{ item }">
+                                            <span class="font-weight-bold grey--text text--darken-3">#{{ item.id
+                                                }}</span>
+                                        </template>
+
+                                        <template v-slot:item.dept_name="{ item }">
+                                            <v-chip small label :color="getDeptColor(item.dept_name)" text-color="white"
+                                                class="font-weight-medium">
+                                                {{ item.dept_name }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:item.amount="{ item }">
+                                            <span class="font-weight-bold">RM {{ item.amount.toLocaleString() }}</span>
+                                        </template>
+
+                                        <template v-slot:item.category="{ item }">
+                                            <v-chip small label color="blue lighten-5" text-color="primary"
+                                                class="font-weight-medium">
+                                                {{ item.category }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:item.manager_status="{ item }">
+                                            <v-chip x-small :class="'status-chip-' + item.manager_status"
+                                                class="font-weight-medium">
+                                                {{ item.manager_status.toUpperCase() }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:item.actions="{ item }">
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon small color="success" v-bind="attrs" v-on="on"
+                                                        @click="approveReimbursement(item)">
+                                                        <v-icon small>mdi-check-circle</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span>Approve</span>
+                                            </v-tooltip>
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon small color="error" v-bind="attrs" v-on="on"
+                                                        @click="openRejectDialog(item)">
+                                                        <v-icon small>mdi-close-circle</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span>Reject</span>
+                                            </v-tooltip>
+                                            <v-tooltip top>
+                                                <template v-slot:activator="{ on, attrs }">
+                                                    <v-btn icon small color="primary" v-bind="attrs" v-on="on"
+                                                        @click="requestSessionForItem(item)">
+                                                        <v-icon small>mdi-key-variant</v-icon>
+                                                    </v-btn>
+                                                </template>
+                                                <span>Request K_session</span>
+                                            </v-tooltip>
+                                        </template>
+
+                                        <template v-slot:no-data>
+                                            <div class="pa-8 text-center grey--text">
+                                                <v-icon size="64" color="grey lighten-2">mdi-check-all</v-icon>
+                                                <div class="mt-2 text-body-1">No pending reviews</div>
+                                            </div>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- K_session Manager Page -->
+                    <div v-if="selectedItem === 2">
+                        <v-row>
+                            <v-col cols="12" md="6">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Request K_session</div>
+                                            <div class="caption grey--text">Temporary cross-department access</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <v-alert type="info" text dense class="mb-4">
+                                            K_session grants temporary access to decrypt Layer 1 data across
+                                            departments. All access is logged for audit.
+                                        </v-alert>
+                                        <v-form>
+                                            <v-textarea v-model="sessionRequest.reason" label="Reason for Access *"
+                                                outlined rows="3"
+                                                placeholder="e.g., Monthly financial audit"></v-textarea>
+                                            <v-select v-model="sessionRequest.scope"
+                                                :items="['All Departments', 'Engineering', 'Marketing', 'Sales', 'HR']"
+                                                label="Access Scope *" outlined dense></v-select>
+                                            <v-select v-model="sessionRequest.duration"
+                                                :items="['1 hour', '2 hours', '3 hours', '4 hours']" label="Duration *"
+                                                outlined dense></v-select>
+                                        </v-form>
+                                    </v-card-text>
+                                    <v-divider></v-divider>
+                                    <v-card-actions class="pa-4">
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="success" depressed class="px-8" @click="requestSession"
+                                            :disabled="sessionActive">
+                                            <v-icon left>mdi-key-plus</v-icon>
+                                            Request K_session
+                                        </v-btn>
+                                    </v-card-actions>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <v-card class="rounded-card" elevation="0"
+                                    :color="sessionActive ? 'green lighten-5' : 'grey lighten-4'">
+                                    <v-toolbar flat :color="sessionActive ? 'green lighten-5' : 'grey lighten-4'"
+                                        class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Session Status</div>
+                                            <div class="caption grey--text">Current access level</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <div v-if="sessionActive">
+                                            <div class="d-flex align-center mb-4">
+                                                <v-icon large color="success" class="mr-3">mdi-check-circle</v-icon>
+                                                <div>
+                                                    <div class="font-weight-bold text-h6">K_session Active</div>
+                                                    <div class="caption">Full decryption access granted</div>
+                                                </div>
+                                            </div>
+                                            <v-divider class="my-4"></v-divider>
+                                            <div class="mb-2">
+                                                <strong>Reason:</strong> {{ activeSession.reason }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Scope:</strong> {{ activeSession.scope }}
+                                            </div>
+                                            <div class="mb-2">
+                                                <strong>Time Remaining:</strong> {{ sessionTimeRemaining }}
+                                            </div>
+                                            <div class="mb-4">
+                                                <strong>Started:</strong> {{ activeSession.startTime }}
+                                            </div>
+                                            <v-btn color="error" block depressed @click="endSession">
+                                                <v-icon left>mdi-key-remove</v-icon>
+                                                End Session Now
+                                            </v-btn>
+                                        </div>
+                                        <div v-else>
+                                            <div class="d-flex align-center mb-4">
+                                                <v-icon large color="grey" class="mr-3">mdi-lock</v-icon>
+                                                <div>
+                                                    <div class="font-weight-bold text-h6">No Active Session</div>
+                                                    <div class="caption">Pattern Layer access only</div>
+                                                </div>
+                                            </div>
+                                            <v-divider class="my-4"></v-divider>
+                                            <div class="mb-2">
+                                                <v-icon small color="success" class="mr-1">mdi-check</v-icon>
+                                                Can view aggregated statistics
+                                            </div>
+                                            <div class="mb-2">
+                                                <v-icon small color="success" class="mr-1">mdi-check</v-icon>
+                                                Can access Pattern Layer metadata
+                                            </div>
+                                            <div class="mb-2">
+                                                <v-icon small color="error" class="mr-1">mdi-close</v-icon>
+                                                Cannot decrypt sensitive data
+                                            </div>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- Audit Trail Page -->
+                    <div v-if="selectedItem === 3">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Audit Trail</div>
+                                            <div class="caption grey--text">Complete access log for compliance</div>
+                                        </div>
+                                        <v-spacer></v-spacer>
+                                        <v-text-field v-model="auditSearch" prepend-inner-icon="mdi-magnify"
+                                            label="Search..." single-line hide-details outlined dense
+                                            style="max-width: 250px" background-color="grey lighten-5"></v-text-field>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-data-table :headers="auditHeaders" :items="auditLogs" :search="auditSearch"
+                                        class="elevation-0">
+                                        <template v-slot:item.id="{ item }">
+                                            <span class="font-weight-bold grey--text text--darken-3">#{{ item.id
+                                                }}</span>
+                                        </template>
+
+                                        <template v-slot:item.action="{ item }">
+                                            <v-chip small label :color="getActionColor(item.action)" text-color="white"
+                                                class="font-weight-medium">
+                                                {{ item.action }}
+                                            </v-chip>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- Financial Reports Page -->
+                    <div v-if="selectedItem === 4">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Financial Reports</div>
+                                            <div class="caption grey--text">Generate and export reports</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <v-row>
+                                            <v-col cols="12" md="4" v-for="report in reportTemplates"
+                                                :key="report.title">
+                                                <v-card outlined class="rounded pa-4">
+                                                    <v-icon large :color="report.color" class="mb-3">{{ report.icon
+                                                        }}</v-icon>
+                                                    <h3 class="text-h6 font-weight-bold mb-2">{{ report.title }}</h3>
+                                                    <p class="caption grey--text mb-4">{{ report.description }}</p>
+                                                    <v-btn color="primary" outlined block>
+                                                        <v-icon left small>mdi-download</v-icon>
+                                                        Generate Report
+                                                    </v-btn>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </v-container>
+            </v-main>
+
+            <!-- Reject Dialog -->
+            <v-dialog v-model="rejectDialog" max-width="500px">
+                <v-card>
+                    <v-card-title class="text-h6 font-weight-bold">
+                        Reject Reimbursement
+                    </v-card-title>
+                    <v-divider></v-divider>
+                    <v-card-text class="pa-6">
+                        <v-alert type="warning" text dense class="mb-4">
+                            This action will reject reimbursement #{{ selectedReimbursement ? selectedReimbursement.id :
+                            '' }}
+                        </v-alert>
+                        <v-textarea v-model="rejectReason" label="Rejection Reason *" outlined rows="4"
+                            placeholder="Please provide a reason for rejection..."
+                            :rules="[v => !!v || 'Reason is required']"></v-textarea>
+                    </v-card-text>
+                    <v-divider></v-divider>
+                    <v-card-actions class="pa-4">
+                        <v-spacer></v-spacer>
+                        <v-btn text color="grey darken-1" @click="closeRejectDialog">Cancel</v-btn>
+                        <v-btn color="error" depressed @click="confirmReject">
+                            <v-icon left>mdi-close-circle</v-icon>
+                            Confirm Reject
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Snackbar -->
+            <v-snackbar v-model="snackbar.show" :color="snackbar.color" top right>
+                <v-icon left color="white">{{ snackbar.icon }}</v-icon>
+                {{ snackbar.text }}
+            </v-snackbar>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/finance.js"></script>
+</body>
+
+</html>
