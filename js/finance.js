@@ -43,7 +43,8 @@ new Vue({
             { text: 'Category', value: 'category', width: '150px' },
             { text: 'Date', value: 'date', width: '120px' },
             { text: 'Mgr Status', value: 'manager_status', width: '120px' },
-            { text: 'Actions', value: 'actions', sortable: false, width: '150px' }
+            { text: 'Actions', value: 'actions', sortable: false, width: '250px' },
+            { text: '', value: 'data-table-expand' }
         ],
         auditHeaders: [
             { text: 'ID', value: 'id', width: '100px' },
@@ -93,7 +94,7 @@ new Vue({
     },
     computed: {
         pageTitle() {
-            const titles = ['Dashboard Overview', 'All Pending Reviews', 'K_session Manager', 'Audit Trail', 'Financial Reports'];
+            const titles = ['Dashboard Overview', 'All Pending Reviews', 'K_session Manager', 'Budget Control', 'Audit Trail', 'Financial Reports'];
             return titles[this.selectedItem] || 'Dashboard';
         },
         stats() {
@@ -133,6 +134,17 @@ new Vue({
         },
         maxDeptAmount() {
             return Math.max(...this.departmentBreakdown.map(d => d.amount));
+        },
+        departmentBudgetAnalysis() {
+            return mockData.departments.map(dept => {
+                const deptReimb = mockData.reimbursements.filter(r => r.dept_id === dept.id);
+                const spent = deptReimb.reduce((sum, r) => sum + r.amount, 0);
+                return {
+                    name: dept.name,
+                    spent: spent,
+                    budget: dept.budget
+                };
+            });
         },
         topCategories() {
             const categoryTotals = {};
