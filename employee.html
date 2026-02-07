@@ -76,14 +76,6 @@
                         </v-list-item>
                         <v-list-item class="mb-2 rounded">
                             <v-list-item-icon>
-                                <v-icon>mdi-clock-outline</v-icon>
-                            </v-list-item-icon>
-                            <v-list-item-content>
-                                <v-list-item-title class="font-weight-medium">Pending Requests</v-list-item-title>
-                            </v-list-item-content>
-                        </v-list-item>
-                        <v-list-item class="mb-2 rounded">
-                            <v-list-item-icon>
                                 <v-icon>mdi-history</v-icon>
                             </v-list-item-icon>
                             <v-list-item-content>
@@ -209,10 +201,8 @@
                                 <v-card class="pa-6" elevation="0">
                                     <div class="d-flex align-center">
                                         <div class="flex-grow-1">
-                                            <h3 class="text-h6 font-weight-bold mb-2">Need to submit a reimbursement?
-                                            </h3>
-                                            <p class="grey--text mb-0">Click here to submit a new reimbursement request
-                                                with end-to-end encryption</p>
+                                            <h3 class="text-h6 font-weight-bold mb-2">Submit a new reimbursement</h3>
+                                            <p class="caption grey--text mb-0">Quick and secure submission process</p>
                                         </div>
                                         <v-btn x-large color="primary" depressed class="px-8" @click="selectedItem = 1">
                                             <v-icon left>mdi-plus-circle</v-icon>
@@ -242,7 +232,7 @@
                                                 <div>
                                                     <div class="font-weight-bold">{{ item.description }}</div>
                                                     <div class="caption grey--text">RM {{ item.amount.toLocaleString()
-                                                        }} • {{ item.category }}</div>
+                                                        }} • {{ item.category }} • {{ item.date }}</div>
                                                 </div>
                                                 <v-chip small :class="'status-chip-' + item.status"
                                                     class="font-weight-medium">
@@ -264,8 +254,7 @@
                                     <v-toolbar flat color="white" class="px-4 py-2" height="auto">
                                         <div>
                                             <div class="text-h6 font-weight-bold">Submit New Reimbursement</div>
-                                            <div class="caption grey--text">All data will be encrypted with Layer 1
-                                                (K_real) + Layer 2 (K_system)</div>
+                                            <div class="caption grey--text">All data will be encrypted.</div>
                                         </div>
                                     </v-toolbar>
                                     <v-divider></v-divider>
@@ -349,148 +338,56 @@
                                     <v-card-text class="pa-4">
                                         <div class="d-flex align-center mb-3">
                                             <v-icon color="primary" class="mr-2">mdi-information</v-icon>
-                                            <div class="font-weight-bold">Encryption Process</div>
+                                            <div class="font-weight-bold">Approval Process</div>
                                         </div>
                                         <v-timeline dense>
-                                            <v-timeline-item color="success" small>
+                                            <v-timeline-item color="primary" small>
                                                 <div class="caption">
-                                                    <div class="font-weight-bold">Step 1: Layer 1 Encryption</div>
-                                                    <div class="grey--text text--darken-2">Data encrypted with K_real
-                                                        (Department Key)</div>
+                                                    <div class="font-weight-bold">Step 1: Department Manager</div>
+                                                    <div class="grey--text text--darken-2">Your manager will review and
+                                                        approve</div>
                                                 </div>
                                             </v-timeline-item>
                                             <v-timeline-item color="success" small>
                                                 <div class="caption">
-                                                    <div class="font-weight-bold">Step 2: Pattern Layer Added</div>
-                                                    <div class="grey--text text--darken-2">Metadata for analytics
-                                                        attached</div>
+                                                    <div class="font-weight-bold">Step 2: Finance Manager</div>
+                                                    <div class="grey--text text--darken-2">Final approval and processing
+                                                    </div>
                                                 </div>
                                             </v-timeline-item>
-                                            <v-timeline-item color="success" small>
+                                            <v-timeline-item color="info" small>
                                                 <div class="caption">
-                                                    <div class="font-weight-bold">Step 3: Layer 2 Encryption</div>
-                                                    <div class="grey--text text--darken-2">Combined data encrypted with
-                                                        K_system</div>
-                                                </div>
-                                            </v-timeline-item>
-                                            <v-timeline-item color="success" small>
-                                                <div class="caption">
-                                                    <div class="font-weight-bold">Step 4: Digital Signature</div>
-                                                    <div class="grey--text text--darken-2">Signed with your private key
-                                                        (RSA)</div>
+                                                    <div class="font-weight-bold">Step 3: Completed</div>
+                                                    <div class="grey--text text--darken-2">Reimbursement processed</div>
                                                 </div>
                                             </v-timeline-item>
                                         </v-timeline>
                                     </v-card-text>
-                                </v-card>
-                                <v-card class="rounded-card" elevation="0" color="green lighten-5">
-                                    <v-card-text class="pa-4">
-                                        <div class="d-flex align-center mb-2">
-                                            <v-icon color="success" class="mr-2">mdi-shield-check</v-icon>
-                                            <div class="font-weight-bold">Security Status</div>
-                                        </div>
-                                        <div class="caption mb-2">
-                                            <v-icon small color="success">mdi-check</v-icon> K_real Key Active
-                                        </div>
-                                        <div class="caption mb-2">
-                                            <v-icon small color="success">mdi-check</v-icon> Private Key Loaded
-                                        </div>
-                                        <div class="caption">
-                                            <v-icon small color="success">mdi-check</v-icon> Connection Secure (TLS)
-                                        </div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                        </v-row>
-                    </div>
-
-                    <!-- Pending Requests Page -->
-                    <div v-if="selectedItem === 2">
-                        <v-row>
-                            <v-col cols="12">
-                                <v-card class="rounded-card" elevation="0">
-                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
-                                        <div>
-                                            <div class="text-h6 font-weight-bold">Pending Reimbursements</div>
-                                            <div class="caption grey--text">Awaiting manager approval</div>
-                                        </div>
-                                        <v-spacer></v-spacer>
-                                        <v-text-field v-model="search" prepend-inner-icon="mdi-magnify"
-                                            label="Search..." single-line hide-details outlined dense class="mr-4"
-                                            style="max-width: 250px" background-color="grey lighten-5"></v-text-field>
-                                    </v-toolbar>
-                                    <v-divider></v-divider>
-                                    <v-data-table :headers="pendingHeaders" :items="pendingReimbursements"
-                                        :search="search" class="elevation-0">
-                                        <template v-slot:item.id="{ item }">
-                                            <span class="font-weight-bold grey--text text--darken-3">#{{ item.id
-                                                }}</span>
-                                        </template>
-
-                                        <template v-slot:item.description="{ item }">
-                                            <div class="py-2">
-                                                <div class="font-weight-medium">{{ item.description }}</div>
-                                                <div class="caption grey--text">{{ item.vendor }}</div>
-                                            </div>
-                                        </template>
-
-                                        <template v-slot:item.amount="{ item }">
-                                            <span class="font-weight-bold">RM {{ item.amount.toLocaleString() }}</span>
-                                        </template>
-
-                                        <template v-slot:item.category="{ item }">
-                                            <v-chip small label color="blue lighten-5" text-color="primary"
-                                                class="font-weight-medium">
-                                                {{ item.category }}
-                                            </v-chip>
-                                        </template>
-
-                                        <template v-slot:item.status="{ item }">
-                                            <v-chip small :class="'status-chip-' + item.status"
-                                                class="font-weight-medium">
-                                                {{ item.status.toUpperCase() }}
-                                            </v-chip>
-                                        </template>
-
-                                        <template v-slot:item.encryption="{ item }">
-                                            <v-tooltip top>
-                                                <template v-slot:activator="{ on, attrs }">
-                                                    <v-icon color="success" v-bind="attrs"
-                                                        v-on="on">mdi-shield-lock</v-icon>
-                                                </template>
-                                                <span>{{ item.encryption_status }}</span>
-                                            </v-tooltip>
-                                        </template>
-
-                                        <template v-slot:no-data>
-                                            <div class="pa-8 text-center grey--text">
-                                                <v-icon size="64" color="grey lighten-2">mdi-check-all</v-icon>
-                                                <div class="mt-2 text-body-1">No pending reimbursements</div>
-                                            </div>
-                                        </template>
-                                    </v-data-table>
                                 </v-card>
                             </v-col>
                         </v-row>
                     </div>
 
                     <!-- History Page -->
-                    <div v-if="selectedItem === 3">
+                    <div v-if="selectedItem === 2">
                         <v-row>
                             <v-col cols="12">
                                 <v-card class="rounded-card" elevation="0">
                                     <v-toolbar flat color="white" class="px-4 py-2" height="auto">
                                         <div>
                                             <div class="text-h6 font-weight-bold">Reimbursement History</div>
-                                            <div class="caption grey--text">All your past reimbursement requests</div>
+                                            <div class="caption grey--text">All your reimbursement requests</div>
                                         </div>
                                         <v-spacer></v-spacer>
+                                        <v-select v-model="statusFilter" :items="statusOptions" label="Filter by Status"
+                                            outlined dense hide-details class="mr-4" style="max-width: 200px"
+                                            background-color="grey lighten-5"></v-select>
                                         <v-text-field v-model="historySearch" prepend-inner-icon="mdi-magnify"
                                             label="Search..." single-line hide-details outlined dense class="mr-4"
                                             style="max-width: 250px" background-color="grey lighten-5"></v-text-field>
                                     </v-toolbar>
                                     <v-divider></v-divider>
-                                    <v-data-table :headers="historyHeaders" :items="allReimbursements"
+                                    <v-data-table :headers="historyHeaders" :items="filteredReimbursements"
                                         :search="historySearch" class="elevation-0">
                                         <template v-slot:item.id="{ item }">
                                             <span class="font-weight-bold grey--text text--darken-3">#{{ item.id

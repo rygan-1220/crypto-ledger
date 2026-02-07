@@ -21,6 +21,7 @@ new Vue({
         currentUser: mockData.users[0], // John Tan - Employee
         search: '',
         historySearch: '',
+        statusFilter: 'All',
         dateMenu: false,
         form: {
             vendor: '',
@@ -54,8 +55,11 @@ new Vue({
     },
     computed: {
         pageTitle() {
-            const titles = ['Dashboard Overview', 'Submit Reimbursement', 'Pending Requests', 'Reimbursement History'];
+            const titles = ['Dashboard Overview', 'Submit Reimbursement', 'Reimbursement History'];
             return titles[this.selectedItem] || 'Dashboard';
+        },
+        statusOptions() {
+            return ['All', 'Pending', 'Approved', 'Rejected'];
         },
         stats() {
             return mockHelpers.getEmployeeStats(this.currentUser.id);
@@ -68,6 +72,12 @@ new Vue({
         },
         recentActivity() {
             return this.allReimbursements.slice(0, 5);
+        },
+        filteredReimbursements() {
+            if (this.statusFilter === 'All') {
+                return this.allReimbursements;
+            }
+            return this.allReimbursements.filter(r => r.status === this.statusFilter.toLowerCase());
         }
     },
     methods: {
