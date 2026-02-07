@@ -93,8 +93,8 @@
                             <div class="d-flex align-center">
                                 <v-icon color="success" class="mr-2">mdi-shield-check</v-icon>
                                 <div>
-                                    <div class="caption font-weight-bold">Dept K_real Active</div>
-                                    <div class="caption grey--text text--darken-1">Engineering Dept</div>
+                                    <div class="caption font-weight-bold">E2E Encryption Active</div>
+                                    <div class="caption grey--text text--darken-1">Engineering Department</div>
                                 </div>
                             </div>
                         </v-card>
@@ -199,7 +199,7 @@
 
                         <!-- Budget Overview -->
                         <v-row class="mb-4">
-                            <v-col cols="12" md="8">
+                            <v-col cols="12">
                                 <v-card class="rounded-card" elevation="0">
                                     <v-toolbar flat color="white" class="px-4 py-2" height="auto">
                                         <div>
@@ -231,24 +231,6 @@
                                                     }}</div>
                                             </div>
                                         </div>
-                                    </v-card-text>
-                                </v-card>
-                            </v-col>
-                            <v-col cols="12" md="4">
-                                <v-card class="rounded-card" elevation="0" color="orange lighten-5">
-                                    <v-card-text class="pa-6">
-                                        <div class="d-flex align-center mb-4">
-                                            <v-icon color="orange darken-2" class="mr-2">mdi-alert-circle</v-icon>
-                                            <div class="font-weight-bold">Action Required</div>
-                                        </div>
-                                        <div class="mb-3">
-                                            <div class="caption grey--text text--darken-2">Pending Approvals</div>
-                                            <div class="text-h5 font-weight-bold">{{ stats.pending }} requests</div>
-                                        </div>
-                                        <v-btn color="orange darken-2" block depressed @click="selectedItem = 1">
-                                            Review Now
-                                            <v-icon right>mdi-arrow-right</v-icon>
-                                        </v-btn>
                                     </v-card-text>
                                 </v-card>
                             </v-col>
@@ -352,7 +334,7 @@
                                         </template>
 
                                         <template v-slot:item.days_pending="{ item }">
-                                            <v-chip small
+                                            <v-chip small label
                                                 :color="getDaysPending(item.submitted_date) > 3 ? 'error' : 'grey'"
                                                 :text-color="getDaysPending(item.submitted_date) > 3 ? 'white' : 'black'">
                                                 {{ getDaysPending(item.submitted_date) }} days
@@ -360,15 +342,16 @@
                                         </template>
 
                                         <template v-slot:item.actions="{ item }">
-                                            <v-btn small color="success" depressed class="mr-2"
-                                                @click="approveRequest(item)">
-                                                <v-icon small left>mdi-check</v-icon>
-                                                Approve
-                                            </v-btn>
-                                            <v-btn small color="error" outlined @click="openRejectDialog(item)">
-                                                <v-icon small left>mdi-close</v-icon>
-                                                Reject
-                                            </v-btn>
+                                            <div class="d-flex" style="gap: 8px;">
+                                                <v-btn small color="success" depressed @click="approveRequest(item)">
+                                                    <v-icon small left>mdi-check</v-icon>
+                                                    Approve
+                                                </v-btn>
+                                                <v-btn small color="error" outlined @click="openRejectDialog(item)">
+                                                    <v-icon small left>mdi-close</v-icon>
+                                                    Reject
+                                                </v-btn>
+                                            </div>
                                         </template>
 
                                         <template v-slot:expanded-item="{ headers, item }">
@@ -387,18 +370,13 @@
                                                     <v-col cols="12" md="4">
                                                         <v-card elevation="0">
                                                             <v-card-text>
-                                                                <div class="caption grey--text mb-1">Encryption Status
+                                                                <div class="caption grey--text mb-1">Security Status
                                                                 </div>
                                                                 <div class="d-flex align-center mb-2">
                                                                     <v-icon small color="success"
                                                                         class="mr-2">mdi-shield-check</v-icon>
-                                                                    <span class="caption">{{ item.encryption_status
-                                                                        }}</span>
-                                                                </div>
-                                                                <div class="d-flex align-center">
-                                                                    <v-icon small color="success"
-                                                                        class="mr-2">mdi-check-decagram</v-icon>
-                                                                    <span class="caption">Signature Verified</span>
+                                                                    <span class="caption">Signature Verified &
+                                                                        Encrypted</span>
                                                                 </div>
                                                             </v-card-text>
                                                         </v-card>
@@ -426,9 +404,19 @@
                                 <v-card class="rounded-card" elevation="0">
                                     <v-toolbar flat color="white" class="px-4 py-2" height="auto">
                                         <div>
-                                            <div class="text-h6 font-weight-bold">Team Members</div>
-                                            <div class="caption grey--text">Engineering Department</div>
+                                            <div class="text-h6 font-weight-bold">Engineering Department Team Members
+                                            </div>
+                                            <div class="caption grey--text">Manage your team and allocate members</div>
                                         </div>
+                                        <v-spacer></v-spacer>
+                                        <v-text-field v-model="teamSearch" prepend-inner-icon="mdi-magnify"
+                                            label="Search by name or email..." single-line hide-details outlined dense
+                                            class="mr-4" style="max-width: 300px"
+                                            background-color="grey lighten-5"></v-text-field>
+                                        <v-btn color="primary" depressed @click="addMemberDialog = true">
+                                            <v-icon left>mdi-account-plus</v-icon>
+                                            Add Member
+                                        </v-btn>
                                     </v-toolbar>
                                     <v-divider></v-divider>
                                     <v-card-text class="pa-6">
@@ -481,13 +469,16 @@
                                             <div class="caption grey--text">All department reimbursements</div>
                                         </div>
                                         <v-spacer></v-spacer>
+                                        <v-select v-model="historyStatusFilter" :items="historyStatusOptions"
+                                            label="Filter by Status" outlined dense hide-details class="mr-4"
+                                            style="max-width: 200px" background-color="grey lighten-5"></v-select>
                                         <v-text-field v-model="historySearch" prepend-inner-icon="mdi-magnify"
                                             label="Search..." single-line hide-details outlined dense
                                             style="max-width: 250px" background-color="grey lighten-5"></v-text-field>
                                     </v-toolbar>
                                     <v-divider></v-divider>
-                                    <v-data-table :headers="historyHeaders" :items="allDeptReimbursements"
-                                        :search="historySearch" class="elevation-0">
+                                    <v-data-table :headers="historyHeaders" :items="filteredHistoryReimbursements"
+                                        :search="historySearch" class="elevation-0" show-expand>
                                         <template v-slot:item.id="{ item }">
                                             <span class="font-weight-bold grey--text text--darken-3">#{{ item.id
                                                 }}</span>
@@ -507,11 +498,49 @@
                                             <span class="font-weight-bold">RM {{ item.amount.toLocaleString() }}</span>
                                         </template>
 
+                                        <template v-slot:item.category="{ item }">
+                                            <v-chip small label color="blue lighten-5" text-color="primary"
+                                                class="font-weight-medium">
+                                                {{ item.category }}
+                                            </v-chip>
+                                        </template>
+
                                         <template v-slot:item.status="{ item }">
                                             <v-chip small :class="'status-chip-' + item.status"
                                                 class="font-weight-medium">
                                                 {{ item.status.toUpperCase() }}
                                             </v-chip>
+                                        </template>
+
+                                        <template v-slot:expanded-item="{ headers, item }">
+                                            <td :colspan="headers.length" class="pa-4 grey lighten-5">
+                                                <v-row>
+                                                    <v-col cols="12" md="8">
+                                                        <div class="mb-2"><strong>Description:</strong> {{
+                                                            item.description }}</div>
+                                                        <div class="mb-2"><strong>Vendor:</strong> {{ item.vendor }}
+                                                        </div>
+                                                        <div class="mb-2"><strong>Project:</strong> {{ item.project_name
+                                                            }}</div>
+                                                        <div class="mb-2"><strong>Submitted:</strong> {{
+                                                            item.submitted_date }}</div>
+                                                    </v-col>
+                                                    <v-col cols="12" md="4">
+                                                        <v-card elevation="0">
+                                                            <v-card-text>
+                                                                <div class="caption grey--text mb-1">Security Status
+                                                                </div>
+                                                                <div class="d-flex align-center mb-2">
+                                                                    <v-icon small color="success"
+                                                                        class="mr-2">mdi-shield-check</v-icon>
+                                                                    <span class="caption">Signature Verified &
+                                                                        Encrypted</span>
+                                                                </div>
+                                                            </v-card-text>
+                                                        </v-card>
+                                                    </v-col>
+                                                </v-row>
+                                            </td>
                                         </template>
                                     </v-data-table>
                                 </v-card>

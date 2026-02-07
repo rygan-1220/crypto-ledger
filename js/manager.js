@@ -22,6 +22,9 @@ new Vue({
         department: mockData.departments[0], // Engineering
         search: '',
         historySearch: '',
+        teamSearch: '',
+        historyStatusFilter: 'All',
+        addMemberDialog: false,
         rejectDialog: false,
         rejectReason: '',
         selectedReimbursement: null,
@@ -32,8 +35,8 @@ new Vue({
             { text: 'Description', value: 'description' },
             { text: 'Amount', value: 'amount', width: '120px' },
             { text: 'Category', value: 'category', width: '150px' },
-            { text: 'Days Pending', value: 'days_pending', width: '120px' },
-            { text: 'Actions', value: 'actions', sortable: false, width: '220px' },
+            { text: 'Days Pending', value: 'days_pending', width: '150px' },
+            { text: 'Actions', value: 'actions', sortable: false, width: '250px' },
             { text: '', value: 'data-table-expand' }
         ],
         historyHeaders: [
@@ -41,8 +44,10 @@ new Vue({
             { text: 'Employee', value: 'user_name' },
             { text: 'Description', value: 'description' },
             { text: 'Amount', value: 'amount', width: '120px' },
+            { text: 'Category', value: 'category', width: '150px' },
             { text: 'Date', value: 'date', width: '120px' },
-            { text: 'Status', value: 'status', width: '120px' }
+            { text: 'Status', value: 'status', width: '120px' },
+            { text: '', value: 'data-table-expand' }
         ]
     },
     computed: {
@@ -70,6 +75,15 @@ new Vue({
         },
         budgetPercent() {
             return Math.round((this.department.spent / this.department.budget) * 100);
+        },
+        historyStatusOptions() {
+            return ['All', 'Pending', 'Approved', 'Rejected'];
+        },
+        filteredHistoryReimbursements() {
+            if (this.historyStatusFilter === 'All') {
+                return this.allDeptReimbursements;
+            }
+            return this.allDeptReimbursements.filter(r => r.status === this.historyStatusFilter.toLowerCase());
         }
     },
     methods: {
