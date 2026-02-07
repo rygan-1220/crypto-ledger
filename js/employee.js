@@ -50,7 +50,7 @@ new Vue({
             { text: 'Category', value: 'category', width: '150px' },
             { text: 'Date', value: 'date', width: '120px' },
             { text: 'Status', value: 'status', width: '120px' },
-            { text: 'Actions', value: 'actions', sortable: false, align: 'end', width: '100px' }
+            { text: '', value: 'data-table-expand' }
         ]
     },
     computed: {
