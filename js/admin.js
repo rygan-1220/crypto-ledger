@@ -147,10 +147,11 @@ new Vue({
         },
         allReimbursements() {
             return mockData.reimbursements.map(r => {
-                const user = this.users.find(u => u.id === r.emp_id);
+                const user = this.users.find(u => u.id === r.user_id);
                 return {
                     ...r,
-                    emp_name: user ? user.name : 'Unknown'
+                    emp_name: r.user_name || (user ? user.name : 'Unknown'),
+                    emp_id: r.user_id
                 };
             });
         },
@@ -202,9 +203,6 @@ new Vue({
         getUserName(userId) {
             const user = this.users.find(u => u.id === userId);
             return user ? user.name : 'Unknown';
-        },
-        formatDate(dateStr) {
-            return mockHelpers.formatDate(dateStr);
         },
         getChartColor(index) {
             const colors = ['#667eea', '#f97316', '#10b981', '#f59e0b', '#8b5cf6', '#06b6d4'];
