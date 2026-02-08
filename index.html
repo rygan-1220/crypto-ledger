@@ -180,6 +180,42 @@
                                         </div>
                                     </v-card>
                                 </v-col>
+
+                                <v-col cols="12" md="4">
+                                    <v-card class="pa-8 text-center" elevation="2" hover
+                                        @click="navigateTo('admin.html')">
+                                        <div class="text-center">
+                                            <v-avatar color="red lighten-5" size="80" class="mb-4">
+                                                <v-icon size="40" color="error">mdi-shield-account</v-icon>
+                                            </v-avatar>
+                                            <h2 class="text-h5 font-weight-bold mb-2">Admin</h2>
+                                            <p class="grey--text mb-4">System administration</p>
+                                            <v-divider class="mb-4"></v-divider>
+                                            <div class="text-left">
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">User management</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Department control</span>
+                                                </div>
+                                                <div class="d-flex align-center mb-2">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">System overview</span>
+                                                </div>
+                                                <div class="d-flex align-center">
+                                                    <v-icon small color="success" class="mr-2">mdi-check-circle</v-icon>
+                                                    <span class="text-caption">Full system access</span>
+                                                </div>
+                                            </div>
+                                            <v-btn color="error" block large depressed class="mt-6">
+                                                Enter as Admin
+                                                <v-icon right>mdi-arrow-right</v-icon>
+                                            </v-btn>
+                                        </div>
+                                    </v-card>
+                                </v-col>
                             </v-row>
 
                             <!-- System Features -->

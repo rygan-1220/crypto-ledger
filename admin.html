@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Dashboard - CryptoLedger</title>
+    <link href="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@7.2.96/css/materialdesignicons.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        .v-application {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .session-active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .status-chip-active {
+            background-color: #E8F5E9 !important;
+            color: #2E7D32 !important;
+        }
+
+        .status-chip-inactive {
+            background-color: #FFEBEE !important;
+            color: #C62828 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+            <!-- Navigation Drawer -->
+            <v-navigation-drawer app permanent color="white" width="260" elevation="1">
+                <div class="d-flex align-center pa-4 pl-6">
+                    <v-avatar color="purple darken-2" size="40" class="mr-3">
+                        <v-icon color="white">mdi-shield-lock</v-icon>
+                    </v-avatar>
+                    <div>
+                        <div class="text-h6 font-weight-bold">CryptoLedger</div>
+                        <div class="text-caption grey--text">Admin Portal</div>
+                    </div>
+                </div>
+
+                <v-divider></v-divider>
+
+                <v-list nav dense class="mt-4 px-4">
+                    <v-list-item-group v-model="selectedItem" color="error">
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-view-dashboard</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Dashboard</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-account-multiple</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">User Management</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-office-building</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Department Management</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-key-variant</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">K_session Manager</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-history</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">History</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        <v-list-item class="mb-2 rounded">
+                            <v-list-item-icon>
+                                <v-icon>mdi-chart-bar</v-icon>
+                            </v-list-item-icon>
+                            <v-list-item-content>
+                                <v-list-item-title class="font-weight-medium">Reports</v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                    </v-list-item-group>
+                </v-list>
+
+                <template v-slot:append>
+                    <div class="pa-4">
+                        <v-card v-if="sessionActive" class="rounded pa-3 mb-3 session-active" elevation="0">
+                            <div class="d-flex align-center">
+                                <v-icon color="white" class="mr-2">mdi-key-variant</v-icon>
+                                <div>
+                                    <div class="caption font-weight-bold white--text">K_session Active</div>
+                                    <div class="caption white--text">{{ sessionTimeRemaining }}</div>
+                                </div>
+                            </div>
+                        </v-card>
+                        <v-card v-else class="rounded pa-3 mb-3" color="red lighten-5" elevation="0">
+                            <div class="d-flex align-center">
+                                <v-icon color="error" class="mr-2">mdi-shield-account</v-icon>
+                                <div>
+                                    <div class="caption font-weight-bold">Admin Access</div>
+                                    <div class="caption grey--text text--darken-1">Full privileges</div>
+                                </div>
+                            </div>
+                        </v-card>
+                        <v-btn block color="error" text large href="index.html">
+                            <v-icon left>mdi-logout</v-icon> Logout
+                        </v-btn>
+                    </div>
+                </template>
+            </v-navigation-drawer>
+
+            <!-- Main Content -->
+            <v-main class="grey lighten-4">
+                <v-app-bar app color="white" elevation="0"
+                    style="border-bottom: 1px solid #e0e0e0 !important; height: 64px;">
+                    <v-toolbar-title class="text-h5 font-weight-bold ml-2">{{ pageTitle }}</v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <div class="d-flex align-center mr-4">
+                        <v-btn icon class="mr-2">
+                            <v-badge color="error" :content="pendingCount" overlap>
+                                <v-icon>mdi-bell-outline</v-icon>
+                            </v-badge>
+                        </v-btn>
+                        <v-avatar color="grey lighten-4" size="40" class="mr-3">
+                            <v-icon color="orange darken-2">mdi-account-tie</v-icon>
+                        </v-avatar>
+                        <div class="d-none d-sm-block text-right">
+                            <div class="subtitle-2 font-weight-bold black--text mb-0">{{ currentUser.name }}</div>
+                            <div class="caption grey--text mt-0">{{ currentUser.email }}</div>
+                        </div>
+                    </div>
+                </v-app-bar>
+
+                <v-container fluid class="pa-6">
+                    <!-- Dashboard Page -->
+                    <div v-if="selectedItem === 0">
+                        <!-- Stats Row -->
+                        <v-row class="mb-4">
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Total Users</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold primary--text mb-1">
+                                                {{ stats.totalUsers }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="blue lighten-5" class="rounded">
+                                            <v-icon x-large color="primary">mdi-account-multiple</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Active Users</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold success--text mb-1">
+                                                {{ stats.activeUsers }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="green lighten-5" class="rounded">
+                                            <v-icon x-large color="success">mdi-account-check</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Departments</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold orange--text mb-1">
+                                                {{ stats.departments }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="orange lighten-5" class="rounded">
+                                            <v-icon x-large color="orange">mdi-office-building</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" sm="6" md="3">
+                                <v-card class="pa-2" elevation="0">
+                                    <v-list-item three-line>
+                                        <v-list-item-content>
+                                            <div class="overline mb-4 grey--text">Total Budget</div>
+                                            <v-list-item-title class="text-h4 font-weight-bold info--text mb-1">
+                                                RM {{ stats.totalBudget.toLocaleString() }}
+                                            </v-list-item-title>
+                                        </v-list-item-content>
+                                        <v-list-item-avatar tile size="80" color="light-blue lighten-5" class="rounded">
+                                            <v-icon x-large color="info">mdi-cash-multiple</v-icon>
+                                        </v-list-item-avatar>
+                                    </v-list-item>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+
+                        <!-- Charts Row -->
+                        <v-row class="mb-4">
+                            <v-col cols="12" md="6">
+                                <v-card class="rounded-card" elevation="0" style="height: 100%;">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Department Spending</div>
+                                            <div class="caption grey--text">Expenditure distribution</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6 d-flex flex-column align-center">
+                                        <canvas id="spendingChart" width="250" height="250"></canvas>
+                                        <div class="mt-4" style="width: 100%;">
+                                            <div v-for="(dept, index) in departments" :key="dept.id"
+                                                class="d-flex align-center justify-space-between mb-2">
+                                                <div class="d-flex align-center">
+                                                    <div
+                                                        :style="`width: 16px; height: 16px; background-color: ${getChartColor(index)}; margin-right: 8px; border-radius: 2px;`">
+                                                    </div>
+                                                    <span class="caption">{{ dept.name }}</span>
+                                                </div>
+                                                <span class="caption font-weight-bold">RM {{ dept.spent.toLocaleString()
+                                                    }}</span>
+                                            </div>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <!-- Department Budget Overview -->
+                                <v-card class="rounded-card mb-4" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Department Budget Overview</div>
+                                            <div class="caption grey--text">Total budget allocation</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <div v-for="dept in departments" :key="dept.id" class="mb-3">
+                                            <div class="d-flex justify-space-between mb-1">
+                                                <span class="caption">{{ dept.name }}</span>
+                                                <span class="caption font-weight-bold">RM {{
+                                                    dept.budget.toLocaleString() }}</span>
+                                            </div>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+
+                                <!-- Department User Distribution -->
+                                <v-card class="rounded-card" elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Department User Distribution</div>
+                                            <div class="caption grey--text">Users per department</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <div v-for="dept in departments" :key="dept.id"
+                                            class="d-flex justify-space-between align-center mb-3">
+                                            <div class="d-flex align-center">
+                                                <v-avatar :color="getDeptColor(dept.id) + ' lighten-5'" size="40"
+                                                    class="mr-3">
+                                                    <v-icon :color="getDeptColor(dept.id)">mdi-account-group</v-icon>
+                                                </v-avatar>
+                                                <span class="caption">{{ dept.name }}</span>
+                                            </div>
+                                            <span class="text-h6 font-weight-bold"
+                                                :class="getDeptColor(dept.id) + '--text'">
+                                                {{ getUserCountByDept(dept.id) }}
+                                            </span>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- User Management Page -->
+                    <div v-if="selectedItem === 1">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">User Management</div>
+                                            <div class="caption grey--text">Manage system users</div>
+                                        </div>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="error" depressed @click="openAddUserDialog">
+                                            <v-icon left>mdi-account-plus</v-icon>
+                                            Add User
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-data-table :headers="userHeaders" :items="users" :search="userSearch"
+                                        class="elevation-0" show-expand>
+                                        <template v-slot:top>
+                                            <v-toolbar flat>
+                                                <v-text-field v-model="userSearch" prepend-inner-icon="mdi-magnify"
+                                                    label="Search users..." single-line hide-details outlined dense
+                                                    style="max-width: 300px" background-color="grey lighten-5">
+                                                </v-text-field>
+                                            </v-toolbar>
+                                        </template>
+
+                                        <template v-slot:item.id="{ item }">
+                                            <span class="font-weight-bold grey--text text--darken-3">{{ item.id
+                                                }}</span>
+                                        </template>
+
+                                        <template v-slot:item.role="{ item }">
+                                            <v-chip small label :color="getRoleColor(item.role)" text-color="white"
+                                                class="font-weight-medium">
+                                                {{ item.role.toUpperCase() }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:item.status="{ item }">
+                                            <v-chip x-small :class="'status-chip-' + item.status"
+                                                class="font-weight-medium">
+                                                {{ item.status.toUpperCase() }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:expanded-item="{ headers, item }">
+                                            <td :colspan="headers.length" class="pa-4 grey lighten-5">
+                                                <v-row>
+                                                    <v-col cols="12" md="8">
+                                                        <div class="mb-2"><strong>Email:</strong> {{ item.email }}</div>
+                                                        <div class="mb-2"><strong>Department:</strong> {{
+                                                            item.dept_name }}</div>
+                                                        <div class="mb-2"><strong>Role:</strong> {{ item.role }}</div>
+                                                        <div class="mb-2"><strong>Status:</strong> {{ item.status }}
+                                                        </div>
+                                                    </v-col>
+                                                    <v-col cols="12" md="4">
+                                                        <v-btn small color="primary" outlined block class="mb-2"
+                                                            @click="editUser(item)">
+                                                            <v-icon small left>mdi-pencil</v-icon>
+                                                            Edit User
+                                                        </v-btn>
+                                                        <v-btn small color="error" outlined block
+                                                            @click="toggleUserStatus(item)">
+                                                            <v-icon small left>mdi-account-off</v-icon>
+                                                            {{ item.status === 'active' ? 'Deactivate' : 'Activate' }}
+                                                        </v-btn>
+                                                    </v-col>
+                                                </v-row>
+                                            </td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- Department Management Page -->
+                    <div v-if="selectedItem === 2">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Department List</div>
+                                            <div class="caption grey--text">View department details</div>
+                                        </div>
+                                        <v-spacer></v-spacer>
+                                        <v-btn color="error" depressed @click="openAddDeptDialog">
+                                            <v-icon left>mdi-office-building-plus</v-icon>
+                                            Add Department
+                                        </v-btn>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-data-table :headers="deptHeaders" :items="departments" class="elevation-0"
+                                        show-expand>
+                                        <template v-slot:item.id="{ item }">
+                                            <span class="font-weight-bold grey--text text--darken-3">{{ item.id
+                                                }}</span>
+                                        </template>
+
+                                        <template v-slot:item.budget="{ item }">
+                                            <span class="font-weight-bold">RM {{ item.budget.toLocaleString() }}</span>
+                                        </template>
+
+                                        <template v-slot:item.spent="{ item }">
+                                            <span>RM {{ item.spent.toLocaleString() }}</span>
+                                        </template>
+
+                                        <template v-slot:item.utilization="{ item }">
+                                            <v-chip small :color="getUtilizationColor(item)" text-color="white">
+                                                {{ Math.round((item.spent / item.budget) * 100) }}%
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:expanded-item="{ headers, item }">
+                                            <td :colspan="headers.length" class="pa-4 grey lighten-5">
+                                                <v-row>
+                                                    <v-col cols="12" md="8">
+                                                        <div class="mb-2"><strong>Department ID:</strong> {{ item.id }}
+                                                        </div>
+                                                        <div class="mb-2"><strong>Total Budget:</strong> RM {{
+                                                            item.budget.toLocaleString() }}</div>
+                                                        <div class="mb-2"><strong>Spent:</strong> RM {{
+                                                            item.spent.toLocaleString() }}</div>
+                                                        <div class="mb-2"><strong>Remaining:</strong> RM {{
+                                                            (item.budget - item.spent).toLocaleString() }}</div>
+                                                        <div class="mb-2"><strong>Users:</strong> {{
+                                                            getUserCountByDept(item.id) }}</div>
+                                                        <div class="mt-3">
+                                                            <v-progress-linear :value="(item.spent / item.budget) * 100"
+                                                                height="20" rounded :color="getUtilizationColor(item)">
+                                                                <template v-slot:default="{ value }">
+                                                                    <small class="white--text font-weight-bold">{{
+                                                                        Math.ceil(value) }}%</small>
+                                                                </template>
+                                                            </v-progress-linear>
+                                                        </div>
+                                                    </v-col>
+                                                </v-row>
+                                            </td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- K_session Manager Page -->
+                    <div v-if="selectedItem === 3">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-alert type="info" text prominent border="left" class="mb-4">
+                                    <div class="text-body-2 font-weight-bold mb-1">K_session Required for Sensitive
+                                        Data</div>
+                                    <div class="caption">Without an active K_session, you can only view basic
+                                        information in History
+                                        and Reports. Request a K_session to decrypt and view sensitive reimbursement
+                                        details.</div>
+                                </v-alert>
+                            </v-col>
+                        </v-row>
+
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Request K_session</div>
+                                            <div class="caption grey--text">Temporary access to encrypted data</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <v-form v-if="!sessionActive">
+                                            <v-row>
+                                                <v-col cols="12" md="6">
+                                                    <v-select v-model="sessionRequest.scope" :items="sessionScopes"
+                                                        label="Access Scope *" outlined dense></v-select>
+                                                </v-col>
+                                                <v-col cols="12" md="6">
+                                                    <v-select v-model="sessionRequest.duration"
+                                                        :items="sessionDurations" label="Duration *" outlined dense>
+                                                    </v-select>
+                                                </v-col>
+                                                <v-col cols="12">
+                                                    <v-textarea v-model="sessionRequest.reason" label="Reason *"
+                                                        outlined dense rows="3"
+                                                        placeholder="Explain why you need access to encrypted data...">
+                                                    </v-textarea>
+                                                </v-col>
+                                                <v-col cols="12">
+                                                    <v-btn color="error" large depressed @click="requestSession">
+                                                        <v-icon left>mdi-key-variant</v-icon>
+                                                        Request K_session
+                                                    </v-btn>
+                                                </v-col>
+                                            </v-row>
+                                        </v-form>
+                                        <div v-else>
+                                            <v-alert type="success" text prominent>
+                                                <div class="text-subtitle-1 font-weight-bold mb-2">K_session Active
+                                                </div>
+                                                <div>Time remaining: {{ sessionTimeRemaining }}</div>
+                                                <div>Scope: {{ sessionRequest.scope }}</div>
+                                            </v-alert>
+                                            <v-btn color="error" outlined @click="endSession">
+                                                <v-icon left>mdi-close-circle</v-icon>
+                                                End Session
+                                            </v-btn>
+                                        </div>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- History Page -->
+                    <div v-if="selectedItem === 4">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">System History</div>
+                                            <div class="caption grey--text">All reimbursement records</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-data-table :headers="historyHeaders" :items="allReimbursements"
+                                        :search="historySearch" class="elevation-0" show-expand>
+                                        <template v-slot:top>
+                                            <v-toolbar flat>
+                                                <v-text-field v-model="historySearch" prepend-inner-icon="mdi-magnify"
+                                                    label="Search history..." single-line hide-details outlined dense
+                                                    style="max-width: 300px" background-color="grey lighten-5">
+                                                </v-text-field>
+                                            </v-toolbar>
+                                        </template>
+
+                                        <template v-slot:item.id="{ item }">
+                                            <span class="font-weight-bold grey--text text--darken-3">#{{ item.id
+                                                }}</span>
+                                        </template>
+
+                                        <template v-slot:item.amount="{ item }">
+                                            <span class="font-weight-bold">RM {{ item.amount.toLocaleString() }}</span>
+                                        </template>
+
+                                        <template v-slot:item.status="{ item }">
+                                            <v-chip x-small :color="getStatusColor(item.status)" text-color="white"
+                                                class="font-weight-medium">
+                                                {{ item.status.toUpperCase() }}
+                                            </v-chip>
+                                        </template>
+
+                                        <template v-slot:expanded-item="{ headers, item }">
+                                            <td :colspan="headers.length" class="pa-4 grey lighten-5">
+                                                <v-row>
+                                                    <v-col cols="12" md="8">
+                                                        <div class="mb-2"><strong>Description:</strong> {{
+                                                            sessionActive ? item.description : '[Encrypted]' }}</div>
+                                                        <div class="mb-2"><strong>Vendor:</strong> {{ sessionActive ?
+                                                            item.vendor : '[Encrypted]' }}</div>
+                                                        <div class="mb-2"><strong>Project:</strong> {{ item.project }}
+                                                        </div>
+                                                        <div class="mb-2"><strong>Category:</strong> {{ item.category }}
+                                                        </div>
+                                                        <div class="mb-2"><strong>Submitted:</strong> {{
+                                                            formatDate(item.date) }}</div>
+                                                        <div class="mb-2"><strong>Employee:</strong> {{
+                                                            getUserName(item.emp_id) }}</div>
+                                                        <div class="mb-2"><strong>Department:</strong> {{
+                                                            item.dept_name }}</div>
+                                                    </v-col>
+                                                </v-row>
+                                            </td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+
+                    <!-- Reports Page -->
+                    <div v-if="selectedItem === 5">
+                        <v-row>
+                            <v-col cols="12">
+                                <v-card elevation="0">
+                                    <v-toolbar flat color="white" class="px-4 py-2" height="auto">
+                                        <div>
+                                            <div class="text-h6 font-weight-bold">Financial Reports</div>
+                                            <div class="caption grey--text">Generate system-wide reports</div>
+                                        </div>
+                                    </v-toolbar>
+                                    <v-divider></v-divider>
+                                    <v-card-text class="pa-6">
+                                        <v-row>
+                                            <v-col cols="12" md="6" v-for="report in availableReports"
+                                                :key="report.title">
+                                                <v-card outlined class="pa-4 hover-card"
+                                                    @click="generateReport(report)">
+                                                    <div class="d-flex align-center">
+                                                        <v-avatar :color="report.color + ' lighten-5'" size="60"
+                                                            class="mr-4">
+                                                            <v-icon :color="report.color" large>{{ report.icon
+                                                                }}</v-icon>
+                                                        </v-avatar>
+                                                        <div class="flex-grow-1">
+                                                            <div class="text-h6 font-weight-bold mb-1">{{ report.title
+                                                                }}
+                                                            </div>
+                                                            <div class="caption grey--text">{{ report.description }}
+                                                            </div>
+                                                        </div>
+                                                        <v-icon color="grey">mdi-chevron-right</v-icon>
+                                                    </div>
+                                                </v-card>
+                                            </v-col>
+                                        </v-row>
+                                    </v-card-text>
+                                </v-card>
+                            </v-col>
+                        </v-row>
+                    </div>
+                </v-container>
+            </v-main>
+
+            <!-- Add User Dialog -->
+            <v-dialog v-model="addUserDialog" max-width="600px">
+                <v-card>
+                    <v-card-title>
+                        <span class="text-h5">Add New User</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-form>
+                            <v-text-field v-model="newUser.name" label="Full Name *" outlined dense></v-text-field>
+                            <v-text-field v-model="newUser.email" label="Email *" outlined dense></v-text-field>
+                            <v-select v-model="newUser.role" :items="roleOptions" label="Role *" outlined dense>
+                            </v-select>
+                            <v-select v-model="newUser.dept_id" :items="deptOptions" item-text="name" item-value="id"
+                                label="Department *" outlined dense></v-select>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="addUserDialog = false">Cancel</v-btn>
+                        <v-btn color="error" depressed @click="addUser">Add User</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Add Department Dialog -->
+            <v-dialog v-model="addDeptDialog" max-width="600px">
+                <v-card>
+                    <v-card-title>
+                        <span class="text-h5">Add New Department</span>
+                    </v-card-title>
+                    <v-card-text>
+                        <v-form>
+                            <v-text-field v-model="newDept.name" label="Department Name *" outlined dense>
+                            </v-text-field>
+                            <v-text-field v-model.number="newDept.budget" label="Budget (RM) *" outlined dense
+                                type="number"></v-text-field>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions>
+                        <v-spacer></v-spacer>
+                        <v-btn text @click="addDeptDialog = false">Cancel</v-btn>
+                        <v-btn color="error" depressed @click="addDepartment">Add Department</v-btn>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+
+            <!-- Snackbar -->
+            <v-snackbar v-model="snackbar.show" :color="snackbar.color" top right>
+                <v-icon left color="white">{{ snackbar.icon }}</v-icon>
+                {{ snackbar.text }}
+            </v-snackbar>
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.7.14/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.7.1/dist/vuetify.js"></script>
+    <script src="js/mock-data.js"></script>
+    <script src="js/mockHelpers.js"></script>
+    <script src="js/admin.js"></script>
+</body>
+
+</html>

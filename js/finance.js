@@ -67,12 +67,6 @@ new Vue({
                 color: 'success'
             },
             {
-                title: 'Audit Report',
-                description: 'Compliance and access audit trail',
-                icon: 'mdi-shield-check',
-                color: 'orange'
-            },
-            {
                 title: 'Category Analysis',
                 description: 'Expense breakdown by category',
                 icon: 'mdi-tag-multiple',
@@ -85,10 +79,10 @@ new Vue({
                 color: 'purple'
             },
             {
-                title: 'Tax Report',
-                description: 'Tax-compliant reimbursement report',
-                icon: 'mdi-calculator',
-                color: 'error'
+                title: 'Audit Report',
+                description: 'Compliance and access audit trail',
+                icon: 'mdi-shield-check',
+                color: 'orange'
             }
         ]
     },

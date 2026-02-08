@@ -7,12 +7,13 @@ const mockData = {
 
     // Users in the system
     users: [
-        { id: 'EMP001', name: 'John Tan', email: 'john.tan@company.com', role: 'employee', dept_id: 'D01', dept_name: 'Engineering' },
-        { id: 'EMP002', name: 'Sarah Lee', email: 'sarah.lee@company.com', role: 'employee', dept_id: 'D01', dept_name: 'Engineering' },
-        { id: 'EMP003', name: 'Michael Wong', email: 'michael.wong@company.com', role: 'employee', dept_id: 'D02', dept_name: 'Marketing' },
-        { id: 'MGR001', name: 'David Chen', email: 'david.chen@company.com', role: 'manager', dept_id: 'D01', dept_name: 'Engineering' },
-        { id: 'MGR002', name: 'Lisa Ng', email: 'lisa.ng@company.com', role: 'manager', dept_id: 'D02', dept_name: 'Marketing' },
-        { id: 'FIN001', name: 'Robert Lim', email: 'robert.lim@company.com', role: 'finance', dept_id: 'FIN', dept_name: 'Finance' }
+        { id: 'EMP001', name: 'John Tan', email: 'john.tan@company.com', role: 'employee', dept_id: 'D01', dept_name: 'Engineering', status: 'active' },
+        { id: 'EMP002', name: 'Sarah Lee', email: 'sarah.lee@company.com', role: 'employee', dept_id: 'D01', dept_name: 'Engineering', status: 'active' },
+        { id: 'EMP003', name: 'Michael Wong', email: 'michael.wong@company.com', role: 'employee', dept_id: 'D02', dept_name: 'Marketing', status: 'active' },
+        { id: 'MGR001', name: 'David Chen', email: 'david.chen@company.com', role: 'manager', dept_id: 'D01', dept_name: 'Engineering', status: 'active' },
+        { id: 'MGR002', name: 'Lisa Ng', email: 'lisa.ng@company.com', role: 'manager', dept_id: 'D02', dept_name: 'Marketing', status: 'active' },
+        { id: 'FIN001', name: 'Robert Lim', email: 'robert.lim@company.com', role: 'finance', dept_id: 'FIN', dept_name: 'Finance', status: 'active' },
+        { id: 'ADM001', name: 'Admin User', email: 'admin@company.com', role: 'admin', dept_id: 'ADMIN', dept_name: 'Administration', status: 'active' }
     ],
 
     // Departments
